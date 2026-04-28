@@ -356,4 +356,12 @@ The double data type is signed by default and is a double-precision 64 bit float
 The `char` type is unsigned by default and is an alias for the byte.  It's primary additional function is to aid code readability.  Setting a byte equal to a character literal has the same effect as setting a char equal to a character literal.
 
 ### Strings
-Class/object implementation details will be mentioned later.  Strings are defined as classes and are included in the standard library.  Strings have two fields: value is private, and length is public.  The compiler automatically substitutes the string value in place of its instance reference where a string literal is expected, so something like `println(string)` is possible instead of `println(string.value)`.  Strings also have 
+Strings are `char` arrays and can be directly printed in the same way you would directly print an explicit `char`:
+```
+string str = "hello, ";
+char[] carr = { "w", "o", "r", "l", "d", "!" };
+print(str);
+println(carr);
+// prints "hello, world!" to the console
+```
+Like regular arrays, the compiler keeps track of string length and returns it when passing a string through the `len()` function.  CPL has a strings module in the standard library which contains functions that operate on strings like `substr()`, `split()`, `trim()`, etc.  Strings are heap-allocated and tracked by the garbage collector.  String mutations use realloc.
