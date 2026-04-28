@@ -241,6 +241,29 @@ CLP follows the same syntax as Java for this as well: `<?>` where `?` is one of 
 
 Java calls this "diamond notation" and this diamond notation directly follows the class name with no whitespace: `LinkedList<T>`.  When instantiating a generic class, CLP only requires the diamond notation on the object type: `LinkedList<ExplicitType> linkedList = new LinkedList()`.
 
+### Enums
+Enums use generics and are defined in two ways:
+```
+Enum <enum name> {
+    <FIELD>,
+    <FIELD>,
+    ...
+};
+```
+and second:
+```
+Enum<?> <enum name> {
+    <FIELD> = <value/object of type ?>,
+    ...
+}
+```
+Since the code block for enums aren't used as control flow but instead as part of a statement, the closing curly brace must be terminated with a semicolon.
+It is recommended that enum fields are upper snake case.  Enum fields are accessed through the enum identifier: `<enum name>.<FIELD>`.  Enums in CLP are also
+loosely disguised hashtables where, during definition, fields can be assigned to values (second way).  If defined this way, the type must be passed using 
+diamond notation.  Therefore, all values must be the same type.  If no values are assigned, the diamond can be omitted.  Enum values are automatically 
+assigned to their integer position in the structure, and if a user wants to get the field name as a string, they can use the `stringify()` function from the 
+standard library.  Enums are immutable.
+
 ### Standard Libarary
 Many of these functions will be dependent on the operating system - POSIX/UNIX will have different implementations than DOS.  Ideally, these functions will yield the same end result, separating the user from being concerned with OS-specific implementation details.
 Below is a list of standard library functions, classes, and constants divided by category:
@@ -261,6 +284,10 @@ Below is a list of standard library functions, classes, and constants divided by
 - `len(arr)`: compiler keeps track of array lengths in memory and returns them with this function.
 - `sort(array)`: uses merge sort to sort an array of any type (more on how this works later).
 - `reverse(array)`
+
+**Enums**
+- `Enum<T>`: enum structure
+- `stringify(enum.field)`: convert enum field to string
 
 **Strings**
 
