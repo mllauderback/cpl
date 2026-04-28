@@ -7,10 +7,10 @@ View the [standards](standards.md) file to read about design choices for the lan
 ## Interpreter Architecture
 The interpreter will doesn't compile directly to bytecode or to binary.  Rather, it translates the CLP code
 to C code which then leverages the millions of lines of optimization done by the gcc compiler.  There may be
-some functions that I hand craft in assembly, but for the most part, the interpreter is really just a translator.
+some functions that I hand-craft in assembly, but for the most part, the interpreter is really just a translator.
 
 ## Contributing
 I am not accepting contributions.
 
 ## License
-This code is available under GPL 3.0.
+This code does not have a license - all rights reserved.
