@@ -218,18 +218,17 @@ public class Foo {
 Classes are instantiated using the following syntax: `<class name> <variable name> = new <class name>(<optional arguments>);` where the variable name is the instance reference.
 
 ### Interfaces
-CLP also supports interfaces.  An interface is defined similar to a class except it is implementation agnostic and thus not instantiatable - it requires a class to implement it.  Interface fields and methods cannot be private.  Interface field declarations follow an identical template as class field declarations except they cannot be initialized.  Interface method declarations look like class method declarations except they end with a semicolon instead of a code block:
+CLP also supports interfaces.  An interface is defined similar to a class except it is implementation agnostic and thus not instantiatable - it requires a class to implement it.  Interfaces cannot contain fields.  Interface method declarations cannot be private.  Interface method declarations use the `dec` keyword instead of `def` and are terminated with a semicolon, not a code block.
 ```
 public interface bar {
-    public int barField;
-    public void barMethod();
+    dec public void barMethod();
 }
 ```
 Interfaces cannot be static nor have static members.
 
 ### Inheritance and Polymorphism
 A common issue with inheritance heirarchies is the diamond problem in which class inheriting from two classes sharing the same base class cannot determine which of duplicate methods to call.  To get around this while still offering polymorphic flexibility, classes can only inherit from interfaces.  This is done with the `implements` keyword: `<scope> <static?> class <classname> implements <interface name>`.  Interfaces can also inherit from other interfaces, but the implementation details would
-be forwarded on to the concrete subclass.  This approach avoids the diamond problem since any subclass by necessity must be the only concrete instance implementing inherited methods at the expense of being slightly more verbose.
+be forwarded on to the concrete subclass.  This approach avoids the diamond problem since any subclass by necessity must be a leaf in it's inheritance tree at the expense of being slightly more verbose.  These design choices intentionally encourages code to use class composition instead of inheritance to achieve polymorphic behavior.
 
 ### Generics
 Generics allow classes or interfaces to operate on unknown types while still ensuring type safety.  A common use for this would be for data structures like LinkedLists.  In C, a user would have to write type-specific implementations of the same linked list structure to ensure type-safety (`void*` is not type safe!).  CLP takes the Java approach to this problem and allows users to use a generic as a placeholder at definition which is then made explicit when the class is instantiated.
