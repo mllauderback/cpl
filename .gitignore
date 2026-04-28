@@ -1,0 +1,4 @@
+# ignore bin and buid folders
+bin/
+build/
+test_resources/
