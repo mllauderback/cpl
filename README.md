@@ -11,6 +11,3 @@ some functions that I hand-craft in assembly, but for the most part, the interpr
 
 ## Contributing
 I am not accepting contributions.
-
-## License
-This code does not have a license - all rights reserved.
