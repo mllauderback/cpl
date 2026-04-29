@@ -3,19 +3,19 @@ The purpose of this document is to basically outline the goal of the Carbon prog
 
 ## Goal
 The Carbon Programming Language's main goal is to be a relatively light-weight C-style language which avoids the bloat of C++ and idiomatic dogma of Java.  It should support basic OOP architecture like classes, encapsulation, inheritance, and polymorphism without being dogmatically tied to OOP.  It should include support for basic data structures like LinkedLists, ArrayLists, and HashTables.  These should be generic data structures whose element type is defined on instantiation.  The
-language also supports generics for custom objects/classes.  CLP will support threading.  All basic C data types are to be included including explicit types that allocate memory predictably regardless of the underlying CPU architecture.  Each class will have a default destructor which can be overridden inside the class definition.  Unlike C/C++, there are no header files for managing dependencies.  Classes themselves are scoped as public, protected, or
+language also supports generics for custom objects/classes.  CPL will support threading.  All basic C data types are to be included including explicit types that allocate memory predictably regardless of the underlying CPU architecture.  Each class will have a default destructor which can be overridden inside the class definition.  Unlike C/C++, there are no header files for managing dependencies.  Classes themselves are scoped as public, protected, or
 private and can be imported into other files depending on their scope.  A single file is not limited to a single like-named class.  Carbon Programming Language files (.cpl) compile directly to assembly.  Carbon Programming Language is a strongly-typed language and will support type aliases on imports to keep written code clean instead of building a dependence on an "auto" keyword like C++ which can add ambiguity.
-The standard library functions should be designed as adapters for operating system specific implementations.  This abstraction will allow CLP to be cross platform by compiling separate binaries for different operating systems from the same code.
+The standard library functions should be designed as adapters for operating system specific implementations.  This abstraction will allow CPL to be cross platform by compiling separate binaries for different operating systems from the same code.
 
 ## Basic Overview
-This is a high-level summary of CLPs features.  CLP uses C-style comments: `//` for single line comments and `/* \n\n\n */` for multi-line comments.
+This is a high-level summary of CPLs features.  CPL uses C-style comments: `//` for single line comments and `/* \n\n\n */` for multi-line comments.
 ### Data Types
-There are 9 basic data types in CLP:
+There are 9 basic data types in CPL:
 
 - **Booleans**:
     - `bool`: Booleans can be either `true` or `false`.  Booleans are unsigned bytes where 0 is `false` and >0 is `true`.
 - **Numerical**: 
-    - `ubyte`: This is an unsigned 8-bit integer value. `ubyte` and `sbyte` are the smallest data types in CLP.
+    - `ubyte`: This is an unsigned 8-bit integer value. `ubyte` and `sbyte` are the smallest data types in CPL.
     - `sbyte`: this is a signed 8-bit integer value.
     - `byte`: This is an alias for `ubyte`.  This is the only non-prefixed data type to be unsigned by default, hence it's alias.
     - `int16`: This is a signed 16-bit integer value.
@@ -70,6 +70,7 @@ There are 9 basic data types in CLP:
         - `and`: Boolean and: returns `true` only if both operands are `true`.
         - `or`: Boolean or: returns `false` only if both operands are `false`.
         - `xor`: Boolean exclusive or (xor): returns `true` if only one operand is `true`.
+        - `is`: Boolean type check: returns `true` if left operand type or class matches the right operand type or class or if the left operand class is a subclass of the right operand class.  Otherwise it returns `false`.
 - **String**:
     - `+`: Concatenate: returns a new string where the left string is at index 0 and the right string follows directly after the end of the left.  The left string's null terminator is removed.
     - `\`: Escape: a single backslash followed by one character escapes that character in the string.  Common examples are `\n`, `\t`, `\'`, `\"`, etc.  `'\0'` is a special case that only appears as a single character since the empty character can't appear in strings.
@@ -79,7 +80,7 @@ There are 9 basic data types in CLP:
         - `+=`, `-=`, etc.; `<<=`, `>>=`, etc.
 
 ### Precedence
-CLP's order of operations follows this heirarchy:
+CPL's order of operations follows this heirarchy:
 
 - Operations grouped in parentheses
 - Functions
@@ -94,11 +95,11 @@ CLP's order of operations follows this heirarchy:
 - Assignment operators
 
 ### Statements
-CLP is a statement-oriented language and uses semicolons to turn expressions into statements.  
-CLP uses curly braces to group multiple statements together called code blocks for control flow.  Code blocks are locally scoped.
+CPL is a statement-oriented language and uses semicolons to turn expressions into statements.  
+CPL uses curly braces to group multiple statements together called code blocks for control flow.  Code blocks are locally scoped.
 
 ### Variables
-CLP declares and initializes variables much like C: declaration and initialization in one line, or in two lines (split declaration).  CLP handles a split declaration like two assignments where it first assigns a variable to `null` and then re-assigns to a value.  For this reason, immutable or `const` variables cannot use split declarations (excepting strings).
+CPL declares and initializes variables much like C: declaration and initialization in one line, or in two lines (split declaration).  CPL handles a split declaration like two assignments where it first assigns a variable to `null` and then re-assigns to a value.  For this reason, immutable or `const` variables cannot use split declarations (excepting strings).
 ```
 <modifiers?> <type> <variable name>;
 <variable name> = <expression>;
@@ -121,7 +122,7 @@ Types can be any of the data types listed above or objects either from standard 
 The variable name follows basic C rules: it can only begin with an alphabetic character or an underscore and can only contain alphanumeric characters and underscores.  Variable names are case sensitive.  Variable names cannot be reserved keywords or defined objects.
 CPL perfers lower camel case styling convention for typical variable names.  CPL prefers `static` variable names to be lower snake case and `const` variable names to be upper snake case.
 CPL prefers private member variable names to have a leading underscore.
-Variables can be cast by prepending a variable name with `(<type>)`.  CLP allows implicit type conversion via casting (`int16` &harr; `int32`, `float32` &harr; `float64`, `floatXX` &harr; `intXX`).  Converting from a larger type truncates the top bits of the larger type.  Converting from a float to an int truncates the decimal.
+Variables can be cast by prepending a variable name with `(<type>)`.  CPL allows implicit type conversion via casting (`int16` &harr; `int32`, `float32` &harr; `float64`, `floatXX` &harr; `intXX`).  Converting from a larger type truncates the top bits of the larger type.  Converting from a float to an int truncates the decimal.
 ```
 int32 oldInt = 69420;
 float32 oldFloat = 69.420;
@@ -154,7 +155,7 @@ If initializing an array where each element is explicitly defined, use this synt
 <modifiers?> <type>[] <variable name> = { <element 1>, <element 2>, etc... };
 ```
 The compiler will automatically calculate the length from the assignment.  
-Arrays in CLP are 0-indexed.  Element accesses are done like this:
+Arrays in CPL are 0-indexed.  Element accesses are done like this:
 ```
 <variable name>[<index>]
 ```
@@ -173,7 +174,7 @@ The `const` modifier prevents array elements from being changed.
 
 ### Control Flow
 "Conditions" are evaluated boolean expressions.
-CLP has seven control flow structures:
+CPL has seven control flow structures:
 
 - **Conditions**:
     - `if`: `if (<condition>) <statement; | code block>`  
@@ -236,7 +237,7 @@ To define a function, you must specify any optional modifiers, the return type, 
 ```
 <modifiers?> <type> <function name>(<parameters list?>) <code block>`
 ```
-A function definition does not have to occur above its function call.  A function that doesn't return anything should use `void` for its return type.  Void functions do not need a return statement.  Modifiers include explicit scoping and ownership like `static` -- these are primarily used for methods.  Functions and methods are defined in the same way.  Classes cannot contain functions.  CLP supports function overloads and closures.
+A function definition does not have to occur above its function call.  A function that doesn't return anything should use `void` for its return type.  Void functions do not need a return statement.  Modifiers include explicit scoping and ownership like `static` -- these are primarily used for methods.  Functions and methods are defined in the same way.  Classes cannot contain functions.  CPL supports function overloads and closures.
 
 Example:
 ```
@@ -255,7 +256,7 @@ void logError(string message) {
 ```
 
 ### Entry Point
-Now is probably a good time to discuss the entry point for code in CLP.  CLP looks for a main function as its entry point.  The main function looks like this:
+Now is probably a good time to discuss the entry point for code in CPL.  CPL looks for a main function as its entry point.  The main function looks like this:
 ```
 int main(string[] args) {
     // code
@@ -266,7 +267,7 @@ int main(string[] args) {
 The main method always returns an integer exit code - 0 for success.  The args array is an array of input parameters passed from stdin when launching the program.  `args[0]` is the execution string used to launch the program (`./launch`).
 
 ### Classes
-Classes in CLP are also first-class.  Classes are data structures which own and encapsulate data fields and functions (called methods).  Unlike Java, a single file can contain multiple classes.  Classes can also be wrapped in a scope called a module.  In large codebases, this is a useful means of packaging classes together to avoid ambiguity should there be classes with identical names.  Modules are very similar to C++ namespaces.  Below is a template for defining a module:
+Classes in CPL are also first-class.  Classes are data structures which own and encapsulate data fields and functions (called methods).  Unlike Java, a single file can contain multiple classes.  Classes can also be wrapped in a scope called a module.  In large codebases, this is a useful means of packaging classes together to avoid ambiguity should there be classes with identical names.  Modules are very similar to C++ namespaces.  Below is a template for defining a module:
 ```
 module <module name> {
     // classes, functions, variables here
@@ -278,7 +279,7 @@ Below is a template for defining a class:
 ```
 Classes must be explicitly scoped as either public, protected, or private.  Public classes can be imported from anywhere.  Protected classes are only visible to all code in the scope of its file.  Private classes are only visible to all code in the scope of its definition.  
 The static keyword is optional when defining a class.  A static class is a class which cannot be instantiated and thus all internal variables and methods are implicitly static since they cannot be accessed from an instance.  
-The class name must abide by the same rules as variable names.  CLP prefers class names to use upper camel case.  All classes must use code blocks.
+The class name must abide by the same rules as variable names.  CPL prefers class names to use upper camel case.  All classes must use code blocks.
 
 Class fields are treated like variables and must be explicitly declared inside the class.  Fields of non-static classes can be static.  Fields must be explicitly scoped.  Fields can be initialized at the point of declaration or in the constructor.  Initializing at the point of declaration results in fields that are already defined when the constructor is called.  Every class requires the user to implement a constructor called `init()`.  Defining the constructor works just
 like normal functions except the constructor is always implicitly publicly scoped, the return type is always implicitly the class itself and the constructor always implicitly returns `this`.  Explicitly returning `this` or specifying the class as the return type will result in a compiletime error.
@@ -313,13 +314,13 @@ Foo myFoo = new Foo(10);
 Scope only applies to class compositions where class instantiations are treated like member fields.  Otherwise, class instantiations are scoped as locally as possible.
 
 ### Interfaces
-CLP also supports interfaces.  An interface is defined similar to a class except it is implementation-agnostic and thus not instantiatable: interfaces are simply contracts specifying required methods that contracted classes must implement.  Interfaces cannot contain fields.  Interface method declarations cannot be private.  Interface method declarations look like regular method definitions, but are terminated with a semicolon instead of a code block.
+CPL also supports interfaces.  An interface is defined similar to a class except it is implementation-agnostic and thus not instantiatable: interfaces are simply contracts specifying required methods that contracted classes must implement.  Interfaces cannot contain fields.  Interface method declarations cannot be private.  Interface method declarations look like regular method definitions, but are terminated with a semicolon instead of a code block.
 ```
 public interface Fooable {
     public void fooMethod();
 }
 ```
-Interfaces cannot be static nor have static members.  CLP prefers interface names to be upper camel case and end in "able".
+Interfaces cannot be static nor have static members.  CPL prefers interface names to be upper camel case and end in "able".
 
 ### Inheritance and Polymorphism
 A common issue with inheritance heirarchies is the diamond problem in which a class inheriting from two classes sharing the same base class cannot determine which of duplicate methods to call.  To get around this while still offering polymorphic flexibility, classes cannot inherit from other classes.  Instead, they can only implement interfaces.  This is done with the `implements` keyword in a class definition: `<scope> <static?> class <class name> implements <interface name>`.  Interfaces can also implement other interfaces, but the implementation details would
@@ -369,7 +370,7 @@ public void doFoo(Fooable fooable) {
     
     // to access a subclass method, we need convert fooable to its subclass.
     // we can check if a subclass implements an interface using `is`
-    if (fooable is ClassB) {
+    if (ClassB is fooable) {
         ClassB classB = fooable;
         classB.classBMethod(); // no runtime error because we checked fooable's subclass type
 
@@ -380,15 +381,15 @@ public void doFoo(Fooable fooable) {
 When a subclass gets passed as its interface (`ClassB` passed as a `Fooable` argument), no data is lost at runtime, but the compiler is not guaranteed to know at compiletime which subclass is being passed.  As such, `fooable` is the full reference to its subclass, but to maintain type safety, the compiler requires a new subclass variable to be assigned to `fooable` to gain access to the subclasses data.
 
 ### Generics
-Generics allow classes or interfaces to operate on unknown types while still ensuring type safety.  A common use for this would be for data structures like LinkedLists.  In C, a user would have to write type-specific implementations of the same linked list structure to ensure type-safety (`void*` is not type safe!).  CLP takes the Java approach to this problem and allows users to use a generic as a placeholder at definition which is then made explicit when the class is instantiated.
-CLP follows the same syntax as Java for this as well: `<?>` where `?` is one of the follow depending on its use case:
+Generics allow classes or interfaces to operate on unknown types while still ensuring type safety.  A common use for this would be for data structures like LinkedLists.  In C, a user would have to write type-specific implementations of the same linked list structure to ensure type-safety (`void*` is not type safe!).  CPL takes the Java approach to this problem and allows users to use a generic as a placeholder at definition which is then made explicit when the class is instantiated.
+CPL follows the same syntax as Java for this as well: `<?>` where `?` is one of the follow depending on its use case:
 
 - `T`: This represents a generic type
 - `E`: This represents a generic element
 - `K`: This represents a generic key
 - `V`: This represents a generic value
 
-Java calls this "diamond notation" and this diamond notation directly follows the class name with no whitespace: `LinkedList<T>`.  When instantiating a generic class, CLP only requires the diamond notation on the object type: `LinkedList<ExplicitType> linkedList = new LinkedList()`.
+Java calls this "diamond notation" and this diamond notation directly follows the class name with no whitespace: `LinkedList<T>`.  When instantiating a generic class, CPL only requires the diamond notation on the object type: `LinkedList<ExplicitType> linkedList = new LinkedList()`.
 
 ### Enums
 Enums use generics and can be initialized in two ways:
@@ -423,7 +424,7 @@ Enum<char> Direction = {
 };
 ```
 Since the code block for enums aren't used as control flow but instead as part of a statement, the closing curly brace must be terminated with a semicolon.
-It is recommended that enum fields are upper snake case.  Enum fields are accessed through the enum identifier: `<enum name>.<FIELD>`.  Enums in CLP are also
+It is recommended that enum fields are upper snake case.  Enum fields are accessed through the enum identifier: `<enum name>.<FIELD>`.  Enums in CPL are also
 loosely disguised hashtables where, during definition, fields can be assigned to values (second way).  If defined this way, the type must be passed using 
 diamond notation.  Therefore, all values must be the same type.  If no values are assigned, the diamond can be omitted.  Enum values are automatically 
 assigned to their integer position in the structure, and if a user wants to get the field name as a string, they can use the `stringify()` function from the 
