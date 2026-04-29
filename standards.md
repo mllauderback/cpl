@@ -98,7 +98,7 @@ CLP is a statement-oriented language and uses semicolons to turn expressions int
 CLP uses curly braces to group multiple statements together called code blocks for control flow.  Code blocks are locally scoped.
 
 ### Variables
-CLP declares and initializes variables much like C:
+CLP declares and initializes variables much like C: declaration and initialization in one line, or in two lines (split declaration).  CLP handles a split declaration like two assignments where it first assigns a variable to `null` and then re-assigns to a value.  For this reason, immutable or `const` variables cannot use split declarations (excepting strings).
 ```
 <modifiers?> <type> <variable name>;
 <variable name> = <expression>;
@@ -107,10 +107,14 @@ CLP declares and initializes variables much like C:
 ```
 Example:
 ```
-const int32 var1;
+int32 var1;
 var1 = 10;
 // or
 float32 var2 = 123;
+
+// not allowed
+const float32 pi;
+pi = 3.1415;
 ```
 Modifiers include statements like `const`, scoping statements like `public` or `private`, ownership like `static`, etc.
 Types can be any of the data types listed above or objects either from standard libraries or defined by the user.
@@ -387,9 +391,9 @@ CLP follows the same syntax as Java for this as well: `<?>` where `?` is one of 
 Java calls this "diamond notation" and this diamond notation directly follows the class name with no whitespace: `LinkedList<T>`.  When instantiating a generic class, CLP only requires the diamond notation on the object type: `LinkedList<ExplicitType> linkedList = new LinkedList()`.
 
 ### Enums
-Enums use generics and are defined in two ways:
+Enums use generics and can be initialized in two ways:
 ```
-Enum <enum name> {
+Enum <enum name> = {
     <FIELD>,
     <FIELD>,
     ...
@@ -397,21 +401,21 @@ Enum <enum name> {
 ```
 and second:
 ```
-Enum<type> <enum name> {
+Enum<type> <enum name> = {
     <FIELD> = <value/object of type>,
     ...
-}
+};
 ```
 For example:
 ```
-Enum Direction {
+Enum Direction = {
     NORTH, // `stringify(Direction.NORTH);` is "NORTH"
     SOUTH, // `println(Direction.SOUTH);` prints "1"
     EAST,
     WEST
 };
 // or 
-Enum<char> Direction {
+Enum<char> Direction = {
     NORTH = 'n', // stringify works the same as above
     SOUTH = 's', // `println(Direction.SOUTH)` prints "s"
     EAST = 'e,
