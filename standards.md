@@ -323,8 +323,8 @@ public interface Fooable {
 Interfaces cannot be static nor have static members.  CPL prefers interface names to be upper camel case and end in "able".
 
 ### Inheritance and Polymorphism
-A common issue with inheritance heirarchies is the diamond problem in which a class inheriting from two classes sharing the same base class cannot determine which of duplicate methods to call.  To get around this while still offering polymorphic flexibility, classes cannot inherit from other classes.  Instead, they can only implement interfaces.  This is done with the `implements` keyword in a class definition: `<scope> <static?> class <class name> implements <interface name>`.  Interfaces can also implement other interfaces, but the implementation details would
-be forwarded on to the concrete subclass.  An interface which implements another interface does not have to explicitly declare it's contracted methods.  For example:
+A common issue with inheritance heirarchies is the diamond problem in which a class inheriting from two classes sharing the same superclass cannot determine which of the duplicate methods to call.  To get around this while still offering polymorphic flexibility, classes cannot inherit from other classes, instead, they can only implement interfaces.  This is done with the `implements` keyword in a class definition: `<scope> <static?> class <class name> implements <interface name>`.  Interfaces can also implement other interfaces, but the implementation details would
+be forwarded on to the concrete subclass.  Classes and interfaces can implement multiple interfaces.  An interface which implements another interface does not have to explicitly declare it's contracted methods.  For example:
 ```
 public interface Fooable {
     public void fooMethod();
@@ -345,9 +345,9 @@ public class Concrete implements Barable {
     public void fooMethod() { //... }
 }
 ```
-This approach avoids the diamond problem since any subclass, by necessity, must be a leaf in it's interface contract tree at the expense of being slightly more verbose.  These design choices intentionally encourages code to use class composition instead of inheritance to achieve polymorphic behavior.
+This approach avoids the diamond problem at the expense of concision since any subclass, by necessity, must be a leaf in it's interface contract tree.  These design choices around classes intentionally encourages users to use class composition instead of inheritance to achieve polymorphic behavior.
 
-A class cannot be cast to another class.  A class implementing an interface can type-referenced as its interface, but its interface reference cannot access subclass fields or methods because the interface reference has no knowledge of its subclass instance.
+A class cannot be cast to another class.  A class implementing an interface can referenced as its interface, but its interface reference cannot access subclass fields or methods because the interface reference has no knowledge of its subclass instance.
 ```
 public interface Fooable {
     public void fooMethod();
@@ -364,21 +364,32 @@ public class ClassB implements Fooable {
 }
 
 // somewhere else...
+Fooable fooableA = new ClassA();
+fooableA.fooMethod(); // works
+fooableA.classAMethod(); // compiletime error
+
+ClassA concreteA = fooable;
+concreteA.classAMethod(); // works
+```
+This works because the compiler knows that `Fooable` is not instantiatable, so it looks at what is being assigned to `fooableA`, checks that the assigned class is a leaf in `Fooable`'s contract tree, and proceeds to initialize `ClassA` in memory, pointed to by `fooableA`.  The compiler then enforces that `fooableA` cannot reference subclass methods or fields.
+The example below shows a case where it is not obvious what subclass an interface reference might belong to and how CPL handles that
+case.
+```
+// referencing the above classes and interface:
+
 public void doFoo(Fooable fooable) {
-    fooable.fooMethod(); // will pass at compiletime because fooMethod() is in Fooable
-    fooable.classBMethod(); // will fail at compiletime since classBMethod() is not in Fooable
+    fooable.fooMethod();
+    fooable.classBMethod(); // This function scope has no way of knowing what fooable's subclass is!
     
     // to access a subclass method, we need convert fooable to its subclass.
     // we can check if a subclass implements an interface using `is`
-    if (ClassB is fooable) {
+    if (fooable is ClassB) {
         ClassB classB = fooable;
         classB.classBMethod(); // no runtime error because we checked fooable's subclass type
-
-        ClassA classA = fooable; // runtime error since assignment operators are type safe.
     }
 }
 ```
-When a subclass gets passed as its interface (`ClassB` passed as a `Fooable` argument), no data is lost at runtime, but the compiler is not guaranteed to know at compiletime which subclass is being passed.  As such, `fooable` is the full reference to its subclass, but to maintain type safety, the compiler requires a new subclass variable to be assigned to `fooable` to gain access to the subclasses data.
+The `is` operator is exclusively used for class and type comparisons.  Since an interface reference actually points to its subclass in memory, in the example above, `fooable is ClassB` is equivalent to `ClassB is ClassB` which evaluates to `true`.
 
 ### Generics
 Generics allow classes or interfaces to operate on unknown types while still ensuring type safety.  A common use for this would be for data structures like LinkedLists.  In C, a user would have to write type-specific implementations of the same linked list structure to ensure type-safety (`void*` is not type safe!).  CPL takes the Java approach to this problem and allows users to use a generic as a placeholder at definition which is then made explicit when the class is instantiated.
