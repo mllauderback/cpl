@@ -43,7 +43,9 @@ static char* read_file(const char* path) {
 }
 
 static void run_file(const char* path) {
-    char* source = read_file(path); // malloc'd - source needs to last the entire lifetime of the compilation process
+    // malloc'd - source needs to last the entire lifetime of the compilation
+    // process
+    char* source = read_file(path);
 //    int source_len = strlen(source);
 //
 //    int index = 0;
@@ -57,6 +59,9 @@ static void run_file(const char* path) {
     Scanner scanner;
     scanner_init(&scanner, source);
 
+    TokenList* token_list = tokenize(&scanner);
+
+    token_list_free(token_list);
     free(source);
 }
 
@@ -65,8 +70,8 @@ int main(int argc, const char* argv[]) {
         fprintf(stderr, "Incorrect Usage: must include source file to compile.\n");
         return EXIT_FAILURE;
     }
-    if (str_ends_with(argv[1], ".clp") == 0) {
-        fprintf(stderr, "Incorrect Usage: source file must be '.clp'.\n");
+    if (str_ends_with(argv[1], ".cpl") == 0) {
+        fprintf(stderr, "Incorrect Usage: source file must be '.cpl'.\n");
         return EXIT_FAILURE;
     }
 

@@ -1,17 +1,19 @@
 CC := gcc
 BIN_DIR := bin
-TARGET_NAME := clp
+TARGET_NAME := cpl
 TEST_RESOURCES_DIR := test_resources
-RUN_ARGS := $(TEST_RESOURCES_DIR)/test.clp
+RUN_ARGS := $(TEST_RESOURCES_DIR)/test.cpl
 TARGET := $(BIN_DIR)/$(TARGET_NAME)
 SRC_DIR := src
 BUILD_DIR := build
 TESTS_DIR := tests
 
 # Find all .c files in source directory
-SRCS := $(wildcard $(SRC_DIR)/*.c)
+#SRCS := $(wildcard $(SRC_DIR)/*.c)
+SRCS := $(shell find $(SRC_DIR) -name '*.c')
 # Find all .h files in source directory
-DEPS := $(wildcard $(SRC_DIR)/*.h)
+# DEPS := $(wildcard $(SRC_DIR)/*.h)
+DEPS := $(shell find $(SRC_DIR) -name '*.h')
 # Specify target object files in build directory from SRCS
 OBJS := $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
 
@@ -46,7 +48,7 @@ run:
 memcheck:
 	@echo "Running with memcheck..."
 	@mkdir -p $(LOGS_DIR)
-	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file="${LOGS_DIR}/${LOG}" ./$(TARGET)
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file="${LOGS_DIR}/${LOG}" ./$(TARGET) $(RUN_ARGS)
 	@cat $(LOGS_DIR)/$(LOG)
 
 tests:

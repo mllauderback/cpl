@@ -4,10 +4,12 @@
 #include <stdbool.h>
 
 #include "token.h"
+#include "utils/list.h"
 
 typedef struct {
-    char* start;
-    char* current;
+    const char* start;
+    const char* current;
+    int col;
     int line;
 } Scanner;
 
@@ -23,9 +25,9 @@ bool match(Scanner* scanner, char expected);
 
 void skip_whitespace(Scanner* scanner);
 
-
 // token
 void token_init(Token* token, TokenType type);
 void token_error(Token* token, const char* error_msg);
+TokenList* tokenize(Scanner* scanner);
 
 #endif
