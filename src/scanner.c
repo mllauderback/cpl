@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "scanner.h"
+#include "utils/error.h"
 
 void substr(const char* source, char* dest, int start, size_t length) {
     for (size_t i = 0; i < length; i++) {
@@ -33,6 +34,7 @@ bool is_at_end(Scanner* scanner) {
 
 char next_char(Scanner* scanner) {
     scanner->current++;
+    scanner->col++;
     return scanner->current[-1];
 }
 
@@ -41,6 +43,16 @@ char peek_next(Scanner* scanner) {
         return '\0';
     }
     return scanner->current[1];
+}
+
+char peek(Scanner* scanner) {
+    return *scanner->current;
+}
+
+void skip_whitespace(Scanner* scanner) {
+    while (*scanner->current == ' ') {
+        next_char(scanner);
+    }
 }
 
 //char* next_line(const char* source, int* index) {
@@ -64,11 +76,26 @@ void token_init(Token* token, TokenType type) {
     token->line = 0;
 }
 
-TokenList* tokenize(Scanner* scanner) {
+TokenList* tokenize(Scanner* scanner, const char* filename) {
 
     TokenList* token_list = token_list_create(100);
 
+//    while (!is_at_end(scanner)) {
+        skip_whitespace(scanner); // CPL is whitespace insensitive.
+        // edge case where whitespace pads the end of the file
+        if (is_at_end(scanner)) return token_list;
 
+        char c = peek(scanner);
+        if(!is_alpha(c)) {
+            // invalid statement
+            throw_error(
+                    CPL_ERROR_INVALID_STATEMENT,
+                    CPL_ERROR_INVALID_VARIABLE_START,
+                    filename,
+                    scanner->line,
+                    scanner->col);
+        }
+//    }
 
     return token_list;
 }

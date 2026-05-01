@@ -28,6 +28,6 @@ void skip_whitespace(Scanner* scanner);
 // token
 void token_init(Token* token, TokenType type);
 void token_error(Token* token, const char* error_msg);
-TokenList* tokenize(Scanner* scanner);
+TokenList* tokenize(Scanner* scanner, const char* filename);
 
 #endif
