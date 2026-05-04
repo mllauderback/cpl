@@ -20,8 +20,6 @@ int str_ends_with(const char* str, const char* suffix) {
 static char* read_file(const char* path) {
     FILE* file = fopen(path, "r");
     if (file == NULL) {
-//        fprintf(stderr, "Could not open file \"%s\".\n", path);
-//        exit(74);
         throw_error(CPL_ERROR_FILE_READ, CPL_ERROR_CANNOT_OPEN_FILE, NULL, 0, 0);
     }
     fseek(file, 0L, SEEK_END);
@@ -30,14 +28,10 @@ static char* read_file(const char* path) {
 
     char* buffer = malloc(file_size + 1);
     if (buffer == NULL) {
-//        fprintf(stderr, "Not enough memory to read \"%s\".\n", path);
-//        exit(74);
         throw_error(CPL_ERROR_FILE_READ, CPL_ERROR_INSUFFICIENT_RAM, NULL, 0, 0);
     }
     size_t bytes_read = fread(buffer, sizeof(char), file_size, file);
     if (bytes_read < file_size) {
-//        fprintf(stderr, "Could not read file \"%s\".\n", path);
-//        exit(74);
         throw_error(CPL_ERROR_FILE_READ, CPL_ERROR_CANNOT_READ_FILE, NULL, 0, 0);
     }
     buffer[bytes_read] = '\0';
@@ -47,23 +41,14 @@ static char* read_file(const char* path) {
 }
 
 static void run_file(const char* path) {
-    // malloc'd - source needs to last the entire lifetime of the compilation
-    // process
+    /* malloc'd - source needs to last the entire lifetime of the compilation
+       process */
     char* source = read_file(path);
-//    int source_len = strlen(source);
-//
-//    int index = 0;
-//    int line_no = 0;
-//    while (index < source_len) {
-//        char* line = next_line(source, &index);
-//        printf("line %d: %s\n", line_no, line);
-//        line_no++;
-//        free(line);
-//    }
     Scanner scanner;
     scanner_init(&scanner, source);
 
     TokenList* token_list = tokenize(&scanner, path);
+    token_list_print(token_list);
 
     token_list_free(token_list);
     free(source);

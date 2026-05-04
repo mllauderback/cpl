@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "scanner.h"
+#include "scanner.h" // includes token.h and list.h
 #include "utils/error.h"
 
 void substr(const char* source, char* dest, int start, size_t length) {
@@ -32,10 +32,15 @@ bool is_at_end(Scanner* scanner) {
     return *scanner->current == '\0';
 }
 
-char next_char(Scanner* scanner) {
+const char* next_char(Scanner* scanner) {
     scanner->current++;
     scanner->col++;
-    return scanner->current[-1];
+    char next = scanner->current[-1];
+    if (next == '\n') {
+        scanner->col = 0;
+        scanner->line++;
+    }
+    return &scanner->current[-1];
 }
 
 char peek_next(Scanner* scanner) {
@@ -69,34 +74,57 @@ void skip_whitespace(Scanner* scanner) {
 //}
 
 /* Tokens */
-void token_init(Token* token, TokenType type) {
-    token->type = type;
-    token->start = NULL;
-    token->length = 0;
-    token->line = 0;
-}
-
 TokenList* tokenize(Scanner* scanner, const char* filename) {
 
     TokenList* token_list = token_list_create(100);
+    Token* token;
 
-//    while (!is_at_end(scanner)) {
+    // single-character tokens
+    while (!is_at_end(scanner)) {
         skip_whitespace(scanner); // CPL is whitespace insensitive.
         // edge case where whitespace pads the end of the file
         if (is_at_end(scanner)) return token_list;
 
-        char c = peek(scanner);
-        if(!is_alpha(c)) {
-            // invalid statement
-            throw_error(
-                    CPL_ERROR_INVALID_STATEMENT,
-                    CPL_ERROR_INVALID_VARIABLE_START,
-                    filename,
-                    scanner->line,
-                    scanner->col);
+        const char* c = next_char(scanner);
+        switch (*c) {
+            case '(':
+                token = token_create(TOKEN_LEFT_PAREN, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
+            case ')':
+                token = token_create(TOKEN_RIGHT_PAREN, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
+            case '[':
+                token = token_create(TOKEN_LEFT_BRACKET, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
+            case ']':
+                token = token_create(TOKEN_RIGHT_BRACKET, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
+            case ',':
+                token = token_create(TOKEN_COMMA, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
+            case '.':
+                token = token_create(TOKEN_DOT, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
+            case ';':
+                token = token_create(TOKEN_SEMICOLON, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
+            case '{':
+                token = token_create(TOKEN_LEFT_BRACE, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
+            case '}':
+                token = token_create(TOKEN_RIGHT_BRACE, c, 1, scanner->line);
+                token_list_add(token_list, token);
+                continue;
         }
-//    }
-
+    }
     return token_list;
 }
 
