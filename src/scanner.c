@@ -54,6 +54,17 @@ char peek(Scanner* scanner) {
     return *scanner->current;
 }
 
+const char* peek_str(Scanner* scanner) {
+    
+}
+
+bool match_next(Scanner* scanner, char expected) {
+    if (is_at_end(scanner)) return false;
+    if (*scanner->current != expected) return false;
+    scanner->current++;
+    return true;
+}
+
 void skip_whitespace(Scanner* scanner) {
     while (*scanner->current == ' ') {
         next_char(scanner);
@@ -73,7 +84,7 @@ void skip_whitespace(Scanner* scanner) {
 //    return line;
 //}
 
-/* Tokens */
+/* Scan into tokens */
 TokenList* tokenize(Scanner* scanner, const char* filename) {
 
     TokenList* token_list = token_list_create(100);
@@ -87,6 +98,7 @@ TokenList* tokenize(Scanner* scanner, const char* filename) {
 
         const char* c = next_char(scanner);
         switch (*c) {
+            // one character lexemes
             case '(':
                 token = token_create(TOKEN_LEFT_PAREN, c, 1, scanner->line);
                 token_list_add(token_list, token);
@@ -123,6 +135,22 @@ TokenList* tokenize(Scanner* scanner, const char* filename) {
                 token = token_create(TOKEN_RIGHT_BRACE, c, 1, scanner->line);
                 token_list_add(token_list, token);
                 continue;
+            // one, two, or three character operator/assignment lexemes
+            case '<':
+
+//                if (match_next(scanner, '<')) {
+//                    if (match_next(scanner, '=')) {
+//                        token = token_create(TOKEN_LESS_LESS_EQUAL, c, 3, scanner->line);
+//                    } else {
+//                        token = token_create(TOKEN_LESS_LESS, c, 2, scanner->line);
+//                    }
+//                } else if (match(scanner, '=')) {
+//                    token = token_create(TOKEN_LESS_EQUAL, c, 2, scanner->line);
+//                } else {
+//                    token = token_create(TOKEN_LESS, c, 1, scanner->line);
+//                }
+//                token_list_add(token_list, token);
+//                continue;
         }
     }
     return token_list;

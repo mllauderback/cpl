@@ -4,6 +4,7 @@
 
 #include "scanner.h"
 #include "utils/error.h"
+#include "utils/trie.h"
 
 int str_ends_with(const char* str, const char* suffix) {
     if (!str || !suffix) {
@@ -67,6 +68,5 @@ int main(int argc, const char* argv[]) {
     }
 
     run_file(argv[1]);
-
     return EXIT_SUCCESS;
 }
